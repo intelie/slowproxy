@@ -92,13 +92,14 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <concat destfile="${project.build.directory}/${project.build.finalName}.sh"
+                                <concat destfile="${project.build.directory}/slowproxy"
                                         binary="true">
                                     <fileset dir="${basedir}">
                                         <include name="src/misc/stub.sh"/>
                                         <include name="target/${project.build.finalName}.jar"/>
                                     </fileset>
                                 </concat>
+                                <chmod file="${project.build.directory}/slowproxy" perm="+x"/>
                             </target>
                         </configuration>
                         <goals>
