@@ -1,12 +1,12 @@
-package net.intelie.throttler;
+package net.intelie.slowproxy;
 
 import java.io.Serializable;
 
 public class Throttler implements Serializable {
-    public final long[] queue;
+    private final long[] queue;
     private final int maxCount;
     private final long period;
-    public int begin = 0, count = 0;
+    private int begin = 0, count = 0;
 
     public Throttler(int maxCount, long period) {
         this.maxCount = maxCount;
