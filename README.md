@@ -8,10 +8,10 @@ Run this in the terminal:
     
 ## Usage
 
-    $ slowproxy @56kbps 1234 somehost:5678
+    $ ./slowproxy @56kbps 1234 somehost:5678
 
 Proxies requests from localhost:1234 to somehost:5678, limited to 56kbps
 
-    $ slowproxy @2mbps/56kbps 1234 somehost:5678
+    $ ./slowproxy @2mbps/56kbps 1234 somehost:5678
     
 Proxies requests from localhost:1234 to somehost:5678, limited to 2mbps upload and 56kbps download
