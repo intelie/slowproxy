@@ -14,7 +14,7 @@ Proxies requests from localhost:1234 to somehost:5678, limited to 56kbps
 
     $ ./slowproxy @2mbps/56kbps 1234 somehost:5678
     
-Proxies requests from localhost:1234 to somehost:5678, limited to 2mbps upload and 56kbps download
+Proxies requests from localhost:1234 to somehost:5678, limited to 2mbps download and 56kbps upload
 
 ## TODO
 
