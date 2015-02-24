@@ -1,6 +1,6 @@
-## Instalation
+## Installation
 
-Run this in the terminal:
+Run this in the terminal (downloads the latest binary to the current directory):
 
     LOCATION=`curl -i https://github.com/intelie/slowproxy/releases/latest | perl -n -e '/^Location: \r*([^\r]*)\r*$/ && print "$1"'` &&
     curl -L ${LOCATION/\/tag\///download/}/slowproxy > slowproxy &&
