@@ -12,6 +12,8 @@ mvn versions:set -DnewVersion=$1
 git commit -am "release version $1"
 git tag v$1
 
+mvn clean package
+
 mvn versions:set -DnewVersion=$2-SNAPSHOT
 git commit -am "next version $2-SNAPSHOT"
 git push
