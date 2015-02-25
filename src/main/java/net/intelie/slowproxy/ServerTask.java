@@ -34,16 +34,19 @@ class ServerTask implements Runnable {
 
             System.out.println("Listening at " + server.getLocalPort());
 
+            final SpeedDefinition speed = options.speed();
+            Throttler uploadThrottler = new Throttler(speed.maxUploadBytes(), 1000);
+            Throttler downloadThrottler = new Throttler(speed.maxDownloadBytes(), 1000);
+
             while (true) {
-                acceptSingle(server);
+                acceptSingle(server, uploadThrottler, downloadThrottler);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void acceptSingle(ServerSocket server) {
-        final SpeedDefinition speed = options.speed();
+    private void acceptSingle(ServerSocket server, Throttler uploadThrottler, Throttler downloadThrottler) {
         try {
             final Socket localSocket = server.accept();
             try {
@@ -51,36 +54,50 @@ class ServerTask implements Runnable {
                 final Socket remoteSocket = options.remote().get(currentHost.get()).newSocket();
 
                 connected.incrementAndGet();
-                System.out.println("Accepted. From: " + localSocket.getRemoteSocketAddress() + ". To:  " + remoteSocket.getRemoteSocketAddress() + ".");
+                System.out.println("Accepted. From: " + localSocket.getRemoteSocketAddress() + ". To: " + remoteSocket.getRemoteSocketAddress() + ".");
 
-                final TransferTask upload = new TransferTask(
+                TransferTask upload = new TransferTask(
                         localSocket.getInputStream(),
                         remoteSocket.getOutputStream(),
-                        speed.maxUploadBytes(), totalUpload);
-                final TransferTask download = new TransferTask(
+                        uploadThrottler, totalUpload);
+                TransferTask download = new TransferTask(
                         remoteSocket.getInputStream(),
                         localSocket.getOutputStream(),
-                        speed.maxDownloadBytes(), totalDownload);
+                        downloadThrottler, totalDownload);
 
-                final Future<?> uploadFuture = executor.submit(upload);
-                final Future<?> downloadFuture = executor.submit(download);
-                executor.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        Util.getSilently(uploadFuture);
-                        Util.getSilently(downloadFuture);
-                        Util.silentlyClose(localSocket);
-                        Util.silentlyClose(remoteSocket);
-                        System.out.println("Closed from: " + localSocket.getRemoteSocketAddress());
-                        connected.decrementAndGet();
-                    }
-                });
+                Future<?> uploadFuture = executor.submit(upload);
+                Future<?> downloadFuture = executor.submit(download);
+                executor.submit(new CloseTask(uploadFuture, downloadFuture, localSocket, remoteSocket));
             } catch (Throwable e) {
                 e.printStackTrace();
                 Util.silentlyClose(localSocket);
             }
         } catch (Throwable e) {
             e.printStackTrace();
+        }
+    }
+
+    private class CloseTask implements Runnable {
+        private final Future<?> uploadFuture;
+        private final Future<?> downloadFuture;
+        private final Socket localSocket;
+        private final Socket remoteSocket;
+
+        public CloseTask(Future<?> uploadFuture, Future<?> downloadFuture, Socket localSocket, Socket remoteSocket) {
+            this.uploadFuture = uploadFuture;
+            this.downloadFuture = downloadFuture;
+            this.localSocket = localSocket;
+            this.remoteSocket = remoteSocket;
+        }
+
+        @Override
+        public void run() {
+            Util.getSilently(uploadFuture);
+            Util.getSilently(downloadFuture);
+            Util.silentlyClose(localSocket);
+            Util.silentlyClose(remoteSocket);
+            System.out.println("Closed: " + localSocket.getRemoteSocketAddress());
+            connected.decrementAndGet();
         }
     }
 }
