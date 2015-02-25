@@ -10,7 +10,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
-    @SuppressWarnings("InfiniteLoopStatement")
     public static void main(String[] args) throws Exception {
         if (args.length == 0)
             printUsageAndExit();

@@ -19,8 +19,8 @@ public class Throttler implements Serializable {
     }
 
     public long offer(long ts) {
-        if (maxBytes <= 0)
-            return 0;
+        if (maxBytes < 0) return 0;
+        if (maxBytes == 0) return period;
         return syncOffer(ts);
     }
 

@@ -13,7 +13,7 @@ public class SpeedDefinition {
     }
 
     public static SpeedDefinition parse(String input) {
-        Pattern pattern = Pattern.compile("@(\\d+)([a-z,A-Z]*)(?:/(\\d+)([a-z,A-Z]*))?");
+        Pattern pattern = Pattern.compile("(\\d+)([a-z,A-Z]*)(?:/(\\d+)([a-z,A-Z]*))?");
         Matcher matcher = pattern.matcher(input);
 
         if (!matcher.matches())
