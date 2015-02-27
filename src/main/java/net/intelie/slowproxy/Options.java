@@ -35,7 +35,7 @@ public class Options {
 
         ArrayDeque<String> deque = new ArrayDeque<String>(Arrays.asList(args));
 
-        speedDefinition = deque.peekFirst().charAt(0) == '@' ? SpeedDefinition.parse(deque.pollFirst().substring(1)) : new SpeedDefinition(-1, -1);
+        speedDefinition = deque.peekFirst().charAt(0) == '@' ? SpeedDefinition.parse(deque.pollFirst().substring(1)) : SpeedDefinition.NO_LIMIT;
         localHost = HostDefinition.parseWithOptionalHost(deque.pollFirst());
         while (!deque.isEmpty())
             remoteHosts.add(HostDefinition.parse(deque.pollFirst()));

@@ -1,5 +1,6 @@
 package net.intelie.slowproxy;
 
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -32,11 +33,11 @@ class ServerTask implements Runnable {
             ServerSocket server = options.local().newServerSocket();
             scheduled.scheduleAtFixedRate(new StatusTask(totalUpload, totalDownload, connected), 1, 1, TimeUnit.SECONDS);
 
-            System.out.println("Listening at " + server.getLocalPort());
+            System.out.println("Listening at " + server.getLocalSocketAddress());
 
             final SpeedDefinition speed = options.speed();
             Throttler uploadThrottler = new Throttler(speed.maxUploadBytes(), 1000);
-            Throttler downloadThrottler = new Throttler(speed.maxDownloadBytes(), 1000);
+            Throttler downloadThrottler = speed.splitUpDown() ? new Throttler(speed.maxDownloadBytes(), 1000) : uploadThrottler;
 
             while (true) {
                 acceptSingle(server, uploadThrottler, downloadThrottler);
@@ -50,19 +51,31 @@ class ServerTask implements Runnable {
         try {
             final Socket localSocket = server.accept();
             try {
+                SpeedDefinition speed = options.speed();
+
                 System.out.println("Accepting: " + localSocket.getRemoteSocketAddress());
                 final Socket remoteSocket = options.remote().get(currentHost.get()).newSocket();
 
                 connected.incrementAndGet();
                 System.out.println("Accepted. From: " + localSocket.getRemoteSocketAddress() + ". To: " + remoteSocket.getRemoteSocketAddress() + ".");
 
+                OutputStream remoteOut = remoteSocket.getOutputStream();
+                if (speed.uploadDelay() > 0)
+                    remoteOut = new DelayedOutputStream(remoteOut, speed.uploadDelay(), speed.uploadBufferSize());
+
                 TransferTask upload = new TransferTask(
                         localSocket.getInputStream(),
-                        remoteSocket.getOutputStream(),
+                        remoteOut,
+                        remoteSocket,
                         uploadThrottler, totalUpload);
+
+                OutputStream localOut = localSocket.getOutputStream();
+                if (speed.downloadDelay() > 0)
+                    localOut = new DelayedOutputStream(localOut, speed.downloadDelay(), speed.downloadBufferSize());
                 TransferTask download = new TransferTask(
                         remoteSocket.getInputStream(),
-                        localSocket.getOutputStream(),
+                        localOut,
+                        remoteSocket,
                         downloadThrottler, totalDownload);
 
                 Future<?> uploadFuture = executor.submit(upload);
