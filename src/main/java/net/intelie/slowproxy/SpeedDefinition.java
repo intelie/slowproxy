@@ -41,7 +41,6 @@ public class SpeedDefinition {
         int uploadBytes = splitUpDown ? makeSpeed(matcher.group(5), matcher.group(6)) : downloadBytes;
         int uploadDelay = splitUpDown ? makeDelay(matcher.group(7), matcher.group(8)) : downloadDelay;
 
-
         return new SpeedDefinition(downloadBytes, uploadBytes, downloadDelay, uploadDelay, splitUpDown);
     }
 
@@ -86,7 +85,7 @@ public class SpeedDefinition {
         return downloadDelay;
     }
 
-    public boolean splitUpDown() {
+    public boolean separateBandwidths() {
         return splitUpDown;
     }
 

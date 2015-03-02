@@ -36,8 +36,26 @@ class ServerTask implements Runnable {
             System.out.println("Listening at " + server.getLocalSocketAddress());
 
             final SpeedDefinition speed = options.speed();
+
+            if (speed.maxUploadBytes() >= 0) {
+                System.out.print("The upload speed is limited to " + SpeedDefinition.formatBytes(speed.maxUploadBytes()) + "/s");
+                if (speed.uploadDelay() > 0)
+                    System.out.println(" with " + speed.uploadDelay() + "ms latency");
+                else
+                    System.out.println(".");
+            }
+            if (speed.maxDownloadBytes() >= 0) {
+                System.out.print("The download speed is limited to " + SpeedDefinition.formatBytes(speed.maxDownloadBytes()) + "/s");
+                if (speed.downloadDelay() > 0)
+                    System.out.println(" with " + speed.downloadDelay() + "ms latency");
+                else
+                    System.out.println(".");
+            }
+            if (!speed.separateBandwidths())
+                System.out.println("Upload and download share the same maximum bandwith.");
+
             Throttler uploadThrottler = new Throttler(speed.maxUploadBytes(), 1000);
-            Throttler downloadThrottler = speed.splitUpDown() ? new Throttler(speed.maxDownloadBytes(), 1000) : uploadThrottler;
+            Throttler downloadThrottler = speed.separateBandwidths() ? new Throttler(speed.maxDownloadBytes(), 1000) : uploadThrottler;
 
             while (true) {
                 acceptSingle(server, uploadThrottler, downloadThrottler);

@@ -13,7 +13,7 @@ public class SpeedDefinitionTest {
         assertThat(def.maxUploadBytes()).isEqualTo(56 * 1024 / 8);
         assertThat(def.uploadDelay()).isEqualTo(0);
         assertThat(def.downloadDelay()).isEqualTo(0);
-        assertThat(def.splitUpDown()).isFalse();
+        assertThat(def.separateBandwidths()).isFalse();
     }
 
     @Test
@@ -24,7 +24,7 @@ public class SpeedDefinitionTest {
         assertThat(def.maxUploadBytes()).isEqualTo(56 * 1024 / 8);
         assertThat(def.uploadDelay()).isEqualTo(200);
         assertThat(def.downloadDelay()).isEqualTo(200);
-        assertThat(def.splitUpDown()).isFalse();
+        assertThat(def.separateBandwidths()).isFalse();
     }
 
     @Test
@@ -35,7 +35,7 @@ public class SpeedDefinitionTest {
         assertThat(def.maxUploadBytes()).isEqualTo(56 * 1024 * 1024 / 8);
         assertThat(def.uploadDelay()).isEqualTo(0);
         assertThat(def.downloadDelay()).isEqualTo(0);
-        assertThat(def.splitUpDown()).isFalse();
+        assertThat(def.separateBandwidths()).isFalse();
     }
 
     @Test
@@ -46,7 +46,7 @@ public class SpeedDefinitionTest {
         assertThat(def.maxUploadBytes()).isEqualTo(56 * 1024 * 1024 / 8);
         assertThat(def.uploadDelay()).isEqualTo(2000);
         assertThat(def.downloadDelay()).isEqualTo(2000);
-        assertThat(def.splitUpDown()).isFalse();
+        assertThat(def.separateBandwidths()).isFalse();
     }
 
     @Test
@@ -57,7 +57,7 @@ public class SpeedDefinitionTest {
         assertThat(def.maxUploadBytes()).isEqualTo(2 * 1024 * 1024 / 8);
         assertThat(def.uploadDelay()).isEqualTo(0);
         assertThat(def.downloadDelay()).isEqualTo(0);
-        assertThat(def.splitUpDown()).isTrue();
+        assertThat(def.separateBandwidths()).isTrue();
     }
 
     @Test
@@ -68,7 +68,7 @@ public class SpeedDefinitionTest {
         assertThat(def.maxUploadBytes()).isEqualTo(2 * 1024 * 1024 / 8);
         assertThat(def.uploadDelay()).isEqualTo(1);
         assertThat(def.downloadDelay()).isEqualTo(2000);
-        assertThat(def.splitUpDown()).isTrue();
+        assertThat(def.separateBandwidths()).isTrue();
     }
 
     @Test

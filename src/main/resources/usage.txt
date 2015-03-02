@@ -9,3 +9,8 @@ Examples:
   $ slowproxy @2mbps/56kbps 1234 somehost:5678
   Proxies requests from localhost:1234 to somehost:5678,
   limited to 2mbps download and 56kbps upload
+
+  $ slowproxy @2mbps:200ms 1234 somehost:5678
+  Proxies requests from localhost:1234 to somehost:5678,
+  limited to 2mbps download with a fixed 200ms latency
+  both uploading and downloading

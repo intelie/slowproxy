@@ -23,8 +23,13 @@ Proxies requests from localhost:1234 to somehost:5678, limited to 56kbps
     
 Proxies requests from localhost:1234 to somehost:5678, limited to 2mbps download and 56kbps upload
 
+    $ ./slowproxy @2mbps:200ms 1234 somehost:5678
+
+Proxies requests from localhost:1234 to somehost:5678, limited to 2mbps download with a fixed 200ms latency
+
+
 ## TODO
 
 * Better shell
 * Simulate network stall
-* Simulate latency
+* Simulate variable latency
