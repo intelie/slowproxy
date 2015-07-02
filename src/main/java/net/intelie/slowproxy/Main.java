@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -39,7 +38,10 @@ public class Main {
                 currentHost.set(nextHost);
             }
         }
-        System.exit(0);
+        if ("q".equals(line))
+            System.exit(0);
+        else
+            Thread.sleep(Long.MAX_VALUE);
     }
 
     private static void printUsageAndExit() throws IOException {
