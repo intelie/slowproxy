@@ -24,7 +24,7 @@ public class Main {
 
         ScheduledExecutorService scheduled = Executors.newScheduledThreadPool(1);
         ExecutorService executor = Executors.newCachedThreadPool();
-        AtomicInteger currentHost = new AtomicInteger(0);
+        CyclicCounter currentHost = new CyclicCounter(options.remote().size());
 
         executor.submit(new ServerTask(options, scheduled, executor, currentHost));
 

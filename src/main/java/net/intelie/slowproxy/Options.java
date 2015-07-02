@@ -6,14 +6,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Options {
+    private final boolean balance;
     private final SpeedDefinition speed;
     private final HostDefinition local;
     private final List<HostDefinition> remote;
 
-    public Options(SpeedDefinition speed, HostDefinition local, List<HostDefinition> remote) {
+    public Options(boolean balance, SpeedDefinition speed, HostDefinition local, List<HostDefinition> remote) {
+        this.balance = balance;
         this.speed = speed;
         this.local = local;
         this.remote = remote;
+    }
+
+    public boolean balance() {
+        return balance;
     }
 
     public SpeedDefinition speed() {
@@ -29,16 +35,17 @@ public class Options {
     }
 
     public static Options parse(String... args) {
-        HostDefinition localHost;
         List<HostDefinition> remoteHosts = new ArrayList<HostDefinition>();
-        SpeedDefinition speedDefinition;
-
         ArrayDeque<String> deque = new ArrayDeque<String>(Arrays.asList(args));
 
-        speedDefinition = deque.peekFirst().charAt(0) == '@' ? SpeedDefinition.parse(deque.pollFirst().substring(1)) : SpeedDefinition.NO_LIMIT;
-        localHost = HostDefinition.parseWithOptionalHost(deque.pollFirst());
+        boolean balance = "balance".equals(deque.peekFirst());
+        if (balance) deque.poll();
+
+        SpeedDefinition speedDefinition = deque.peekFirst().charAt(0) == '@' ? SpeedDefinition.parse(deque.pollFirst().substring(1)) : SpeedDefinition.NO_LIMIT;
+
+        HostDefinition localHost = HostDefinition.parseWithOptionalHost(deque.pollFirst());
         while (!deque.isEmpty())
             remoteHosts.add(HostDefinition.parse(deque.pollFirst()));
-        return new Options(speedDefinition, localHost, remoteHosts);
+        return new Options(balance, speedDefinition, localHost, remoteHosts);
     }
 }

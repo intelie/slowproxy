@@ -7,7 +7,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 class ServerTask implements Runnable {
@@ -18,9 +17,9 @@ class ServerTask implements Runnable {
     private final Options options;
     private final ScheduledExecutorService scheduled;
     private final ExecutorService executor;
-    private final AtomicInteger currentHost;
+    private final CyclicCounter currentHost;
 
-    public ServerTask(Options options, ScheduledExecutorService scheduled, ExecutorService executor, AtomicInteger currentHost) {
+    public ServerTask(Options options, ScheduledExecutorService scheduled, ExecutorService executor, CyclicCounter currentHost) {
         this.options = options;
         this.scheduled = scheduled;
         this.executor = executor;
@@ -72,7 +71,7 @@ class ServerTask implements Runnable {
                 SpeedDefinition speed = options.speed();
 
                 System.out.println("Accepting: " + localSocket.getRemoteSocketAddress());
-                final Socket remoteSocket = options.remote().get(currentHost.get()).newSocket();
+                final Socket remoteSocket = options.remote().get(options.balance() ? currentHost.getAndIncrement() : currentHost.get()).newSocket();
 
                 connected.incrementAndGet();
                 System.out.println("Accepted. From: " + localSocket.getRemoteSocketAddress() + ". To: " + remoteSocket.getRemoteSocketAddress() + ".");

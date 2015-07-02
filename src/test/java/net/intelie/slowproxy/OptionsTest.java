@@ -9,6 +9,8 @@ public class OptionsTest {
     public void test_56k_1234_blabla_5678() throws Exception {
         Options options = Options.parse("@56k", "1234", "blabla:5678");
 
+        assertThat(options.balance()).isFalse();
+
         assertThat(options.speed().maxDownloadBytes()).isEqualTo(56 * 1024 / 8);
         assertThat(options.speed().maxUploadBytes()).isEqualTo(56 * 1024 / 8);
 
@@ -18,6 +20,13 @@ public class OptionsTest {
         assertThat(options.remote().size()).isEqualTo(1);
         assertThat(options.remote().get(0).host()).isEqualTo("blabla");
         assertThat(options.remote().get(0).port()).isEqualTo(5678);
+    }
+
+    @Test
+    public void test_balance() throws Exception {
+        Options options = Options.parse("balance", "@56k", "1234", "blabla:5678");
+
+        assertThat(options.balance()).isTrue();
     }
 
     @Test
